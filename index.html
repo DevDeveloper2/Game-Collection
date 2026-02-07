@@ -437,8 +437,8 @@
         <!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
         <div class="controls">
             <div class="info-banner">
-                <span class="icon">🌐</span>
-                <span>Счетчики скачиваний синхронизируются между всеми пользователями в реальном времени!</span>
+                <span class="icon">⏳</span>
+                <span>Загрузка...</span>
             </div>
             <div class="search-bar">
                 <input 
@@ -489,7 +489,7 @@
             {
                 id: 1,
                 name: "Dog Clicker",
-                version: "1.0.0.0-alpha",
+                version: "0.1.0-alpha",
                 image: "", 
                 description: "Игра ещё в Alpha так что тут мало чего есть. Кликайте на собаку и получайте очки!",
                 developmentTime: "4 часа",
@@ -501,7 +501,7 @@
                 rating: 4,
                 tags: ["Игра", "Кликер", "Казуальная"],
                 requirements: "Windows 7+, .NET 6.0",
-                language: "C# 6"
+                language: "C# 10"
             }
             // ДОБАВЛЯЙТЕ НОВЫЕ ПРИЛОЖЕНИЯ ЗДЕСЬ:
             // {
@@ -524,12 +524,20 @@
         ];
 
         // ============================
-        // СЕРВЕРНОЕ ХРАНИЛИЩЕ СТАТИСТИКИ
+        // ХРАНИЛИЩЕ СТАТИСТИКИ
         // ============================
-        // Используем window.storage с shared=true для общего доступа всех пользователей
+        // Автоматически использует window.storage (если доступен) или localStorage (fallback)
         class StatsManager {
             constructor() {
                 this.cache = {}; // Локальный кэш для быстрого доступа
+                this.useServerStorage = typeof window.storage !== 'undefined';
+                this.localStorageKey = 'csharpAppsStats';
+                
+                if (this.useServerStorage) {
+                    console.log('✅ Используется серверное хранилище (данные видны всем пользователям)');
+                } else {
+                    console.log('⚠️ Используется локальное хранилище (данные только в вашем браузере)');
+                }
             }
 
             // Получить количество скачиваний для приложения
@@ -542,10 +550,19 @@
                 }
                 
                 try {
-                    const result = await window.storage.get(key, true); // shared=true для всех пользователей
-                    const downloads = result ? parseInt(result.value) : 0;
-                    this.cache[key] = downloads;
-                    return downloads;
+                    if (this.useServerStorage) {
+                        // Используем серверное хранилище
+                        const result = await window.storage.get(key, true);
+                        const downloads = result ? parseInt(result.value) : 0;
+                        this.cache[key] = downloads;
+                        return downloads;
+                    } else {
+                        // Fallback на localStorage
+                        const data = this.loadLocalStorage();
+                        const downloads = data[appId]?.downloads || 0;
+                        this.cache[key] = downloads;
+                        return downloads;
+                    }
                 } catch (error) {
                     console.log('Не удалось получить счетчик:', error);
                     return 0;
@@ -560,9 +577,20 @@
                     const current = await this.getDownloads(appId);
                     const newCount = current + 1;
                     
-                    await window.storage.set(key, newCount.toString(), true); // shared=true
-                    this.cache[key] = newCount;
+                    if (this.useServerStorage) {
+                        // Используем серверное хранилище
+                        await window.storage.set(key, newCount.toString(), true);
+                    } else {
+                        // Fallback на localStorage
+                        const data = this.loadLocalStorage();
+                        if (!data[appId]) {
+                            data[appId] = { downloads: 0 };
+                        }
+                        data[appId].downloads = newCount;
+                        this.saveLocalStorage(data);
+                    }
                     
+                    this.cache[key] = newCount;
                     return newCount;
                 } catch (error) {
                     console.error('Ошибка при увеличении счетчика:', error);
@@ -573,40 +601,56 @@
             // Получить общее количество скачиваний всех приложений
             async getTotalDownloads() {
                 try {
-                    const keys = await window.storage.list('downloads:', true); // shared=true
-                    
-                    if (!keys || !keys.keys) {
-                        return 0;
-                    }
-                    
-                    let total = 0;
-                    for (const key of keys.keys) {
-                        try {
-                            const result = await window.storage.get(key, true);
-                            if (result) {
-                                total += parseInt(result.value) || 0;
-                            }
-                        } catch (e) {
-                            console.log('Ошибка чтения ключа:', key);
+                    if (this.useServerStorage) {
+                        // Используем серверное хранилище
+                        const keys = await window.storage.list('downloads:', true);
+                        
+                        if (!keys || !keys.keys) {
+                            return 0;
                         }
+                        
+                        let total = 0;
+                        for (const key of keys.keys) {
+                            try {
+                                const result = await window.storage.get(key, true);
+                                if (result) {
+                                    total += parseInt(result.value) || 0;
+                                }
+                            } catch (e) {
+                                console.log('Ошибка чтения ключа:', key);
+                            }
+                        }
+                        
+                        return total;
+                    } else {
+                        // Fallback на localStorage
+                        const data = this.loadLocalStorage();
+                        return Object.values(data).reduce((sum, app) => sum + (app.downloads || 0), 0);
                     }
-                    
-                    return total;
                 } catch (error) {
                     console.log('Не удалось подсчитать общие скачивания:', error);
                     return 0;
                 }
             }
 
-            // Загрузить все счетчики в кэш
-            async loadAllDownloads() {
-                const downloads = {};
-                
-                for (const app of csharpApps) {
-                    downloads[app.id] = await this.getDownloads(app.id);
+            // Загрузка данных из localStorage
+            loadLocalStorage() {
+                try {
+                    const saved = localStorage.getItem(this.localStorageKey);
+                    return saved ? JSON.parse(saved) : {};
+                } catch (error) {
+                    console.error('Ошибка загрузки localStorage:', error);
+                    return {};
                 }
-                
-                return downloads;
+            }
+
+            // Сохранение данных в localStorage
+            saveLocalStorage(data) {
+                try {
+                    localStorage.setItem(this.localStorageKey, JSON.stringify(data));
+                } catch (error) {
+                    console.error('Ошибка сохранения в localStorage:', error);
+                }
             }
         }
 
@@ -881,6 +925,24 @@
             async function initialize() {
                 // Показываем индикатор загрузки
                 appsContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">⏳ Загрузка...</div>';
+                
+                // Обновляем информационный баннер в зависимости от типа хранилища
+                const infoBanner = document.querySelector('.info-banner');
+                if (infoBanner) {
+                    if (statsManager.useServerStorage) {
+                        infoBanner.innerHTML = `
+                            <span class="icon">🌐</span>
+                            <span>Счетчики скачиваний синхронизируются между всеми пользователями в реальном времени!</span>
+                        `;
+                        infoBanner.style.background = 'linear-gradient(135deg, #00A859 0%, #008f4c 100%)';
+                    } else {
+                        infoBanner.innerHTML = `
+                            <span class="icon">💻</span>
+                            <span>Счетчики скачиваний сохраняются локально в вашем браузере (только для вас)</span>
+                        `;
+                        infoBanner.style.background = 'linear-gradient(135deg, #68217A 0%, #4a1859 100%)';
+                    }
+                }
                 
                 renderFilters();
                 await renderApps();
