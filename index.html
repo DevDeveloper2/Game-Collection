@@ -14,11 +14,11 @@
 
         body {
             font-family: 'Courier New', monospace;
-            background: #0a0a0a;
-            color: #e0e0e0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
             line-height: 1.6;
             padding: 20px;
-            background-image: radial-gradient(circle at 20% 30%, rgba(0, 168, 89, 0.05) 0%, transparent 20%);
+            min-height: 100vh;
         }
 
         .container {
@@ -31,20 +31,20 @@
             text-align: center;
             margin-bottom: 40px;
             padding: 30px;
-            background: #1a1a1a;
-            border-radius: 10px;
-            border: 2px solid #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
 
         .header h1 {
-            color: #00A859;
+            color: #ffffff;
             font-size: 2.5rem;
             margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(0, 168, 89, 0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .header p {
-            color: #aaa;
+            color: #f0f0f0;
             font-size: 1.1rem;
             margin-bottom: 20px;
         }
@@ -59,38 +59,43 @@
 
         .stat-item {
             text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
         }
 
         .stat-number {
-            color: #00A859;
+            color: #ffffff;
             font-size: 1.8rem;
             font-weight: bold;
         }
 
         .stat-label {
-            color: #888;
+            color: #f0f0f0;
             font-size: 0.9rem;
         }
 
         /* === ПАНЕЛЬ ПОИСКА И ФИЛЬТРОВ === */
         .controls {
-            background: #1a1a1a;
+            background: #ffffff;
             padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #333;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
 
         .info-banner {
-            background: linear-gradient(135deg, #00A859 0%, #008f4c 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 12px 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 0.9rem;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
         }
 
         .info-banner .icon {
@@ -107,18 +112,20 @@
         .search-input {
             flex: 1;
             min-width: 250px;
-            background: #222;
-            border: 1px solid #444;
-            color: #e0e0e0;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            color: #2c3e50;
             padding: 12px 15px;
-            border-radius: 5px;
+            border-radius: 10px;
             font-family: 'Courier New', monospace;
             font-size: 1rem;
+            transition: all 0.3s;
         }
 
         .search-input:focus {
             outline: none;
-            border-color: #00A859;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .filter-tags {
@@ -128,25 +135,26 @@
         }
 
         .tag-filter {
-            background: #222;
-            color: #aaa;
+            background: #f8f9fa;
+            color: #495057;
             padding: 8px 15px;
             border-radius: 20px;
-            border: 1px solid #444;
+            border: 2px solid #e0e0e0;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.9rem;
         }
 
         .tag-filter:hover {
-            border-color: #00A859;
-            color: #00A859;
+            border-color: #667eea;
+            color: #667eea;
+            background: #f0f4ff;
         }
 
         .tag-filter.active {
-            background: #00A859;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-color: #00A859;
+            border-color: #667eea;
         }
 
         /* === КАРТОЧКИ ПРИЛОЖЕНИЙ === */
@@ -158,24 +166,23 @@
         }
 
         .app-card {
-            background: #222;
-            border-radius: 10px;
+            background: #ffffff;
+            border-radius: 15px;
             overflow: hidden;
-            border: 1px solid #333;
-            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
         }
 
         .app-card:hover {
-            transform: translateY(-5px);
-            border-color: #00A859;
-            box-shadow: 0 5px 20px rgba(0, 168, 89, 0.2);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
         }
 
         .app-image {
             height: 180px;
             overflow: hidden;
-            background: #000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             position: relative;
             display: flex;
             align-items: center;
@@ -189,7 +196,7 @@
         }
 
         .app-image .no-image-text {
-            color: #666;
+            color: #ffffff;
             font-size: 0.95rem;
             text-align: center;
             padding: 20px;
@@ -206,19 +213,19 @@
         }
 
         .app-badge {
-            background: #68217A;
-            color: white;
+            background: rgba(255, 255, 255, 0.9);
+            color: #764ba2;
             padding: 4px 10px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 0.75rem;
             font-weight: bold;
         }
 
         .version-badge {
-            background: #00A859;
-            color: white;
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
             padding: 4px 10px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 0.75rem;
             font-weight: bold;
         }
@@ -227,7 +234,7 @@
             background: #ff6b6b;
             color: white;
             padding: 4px 10px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 0.75rem;
             font-weight: bold;
             animation: pulse 2s infinite;
@@ -243,7 +250,7 @@
         }
 
         .app-title {
-            color: #00A859;
+            color: #2c3e50;
             font-size: 1.3rem;
             margin-bottom: 10px;
             display: flex;
@@ -254,6 +261,7 @@
         .app-rating {
             display: flex;
             gap: 2px;
+            margin-bottom: 10px;
         }
 
         .star {
@@ -262,7 +270,7 @@
         }
 
         .star.empty {
-            color: #444;
+            color: #ddd;
         }
 
         .app-meta {
@@ -270,7 +278,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-bottom: 15px;
-            color: #aaa;
+            color: #6c757d;
             font-size: 0.85rem;
         }
 
@@ -283,7 +291,7 @@
         .app-description {
             margin-bottom: 15px;
             line-height: 1.5;
-            color: #ccc;
+            color: #495057;
         }
 
         .app-tags {
@@ -294,18 +302,17 @@
         }
 
         .app-tag {
-            background: #2a2a2a;
-            color: #00A859;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 0.8rem;
-            border: 1px solid #333;
         }
 
         .app-details {
-            background: #1a1a1a;
+            background: #f8f9fa;
             padding: 12px;
-            border-radius: 5px;
+            border-radius: 10px;
             margin-bottom: 15px;
             font-size: 0.85rem;
         }
@@ -314,7 +321,7 @@
             display: flex;
             justify-content: space-between;
             padding: 5px 0;
-            border-bottom: 1px solid #2a2a2a;
+            border-bottom: 1px solid #e9ecef;
         }
 
         .detail-row:last-child {
@@ -322,30 +329,29 @@
         }
 
         .detail-label {
-            color: #888;
+            color: #6c757d;
         }
 
         .detail-value {
-            color: #e0e0e0;
+            color: #2c3e50;
             font-weight: bold;
         }
 
         .app-actions {
             display: flex;
             gap: 10px;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
         }
 
         .download-btn {
             flex: 1;
-            background: #00A859;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 12px 20px;
-            border-radius: 5px;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: bold;
-            transition: background 0.3s;
+            transition: all 0.3s;
             cursor: pointer;
             border: none;
             font-family: 'Courier New', monospace;
@@ -354,20 +360,12 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .download-btn:hover {
-            background: #008f4c;
-        }
-
-        .download-count {
-            background: #2a2a2a;
-            color: #aaa;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 0.85rem;
-            border: 1px solid #333;
-            white-space: nowrap;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
         /* === ФУТЕР === */
@@ -375,19 +373,18 @@
             text-align: center;
             margin-top: 50px;
             padding: 20px;
-            color: #666;
-            border-top: 1px solid #333;
+            color: #6c757d;
         }
 
         /* === СООБЩЕНИЯ === */
         .no-results {
             text-align: center;
             padding: 50px;
-            color: #666;
+            color: #6c757d;
         }
 
         .no-results h3 {
-            color: #888;
+            color: #495057;
             margin-bottom: 10px;
         }
 
@@ -424,10 +421,6 @@
                     <div class="stat-label">Проектов</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="totalDownloads">0</div>
-                    <div class="stat-label">Скачиваний</div>
-                </div>
-                <div class="stat-item">
                     <div class="stat-number" id="totalHours">0</div>
                     <div class="stat-label">Часов разработки</div>
                 </div>
@@ -437,8 +430,8 @@
         <!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
         <div class="controls">
             <div class="info-banner">
-                <span class="icon">🌐</span>
-                <span>Глобальный счетчик скачиваний (одинаковый для всех пользователей)</span>
+                <span class="icon">✨</span>
+                <span>Все проекты доступны для скачивания бесплатно</span>
             </div>
             <div class="search-bar">
                 <input 
@@ -469,7 +462,7 @@
         <!-- ФУТЕР -->
         <footer class="footer">
             <p>© 2026 | C# Portfolio | Мои проекты на C#</p>
-            <p style="font-size: 0.9rem; margin-top: 10px; color: #444;">
+            <p style="font-size: 0.9rem; margin-top: 10px;">
                 Все приложения созданы мной. Наслаждайтесь просмотром!
             </p>
         </footer>
@@ -483,113 +476,22 @@
             {
                 id: 1,
                 name: "Dog Clicker",
-                version: "0.1.0-alpha",
+                version: "1.0.0.0",
                 image: "", 
-                description: "Игра ещё в Alpha так что тут мало чего есть. Кликайте на собаку и получайте очки!",
+                description: "Кликайте на собаку и получайте очки! Простая и увлекательная игра-кликер.",
                 developmentTime: "4 часа",
                 fileSize: 200,
                 fileSizeUnit: "MB",
                 projectUrl: "https://www.dropbox.com/scl/fi/h50mcexpoe97bungnbqiv/Clicker.zip?rlkey=4x6od6yzxkjddvxoj9773i3oq&st=47wwrnj3&dl=1",
                 added: "2026-02-07",
-                updated: "2026-02-07",
+                updated: "2026-02-08",
                 rating: 4,
                 tags: ["Игра", "Кликер", "Казуальная"],
                 requirements: "Windows 7+, .NET 6.0",
-                language: "C# 10"
+                language: "C# 6"
             }
             // ДОБАВЛЯЙТЕ НОВЫЕ ПРИЛОЖЕНИЯ ЗДЕСЬ
         ];
-
-        // ============================
-        // ГЛОБАЛЬНЫЙ СЧЕТЧИК СКАЧИВАНИЙ (ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ)
-        // ============================
-        class GlobalDownloadCounter {
-            constructor() {
-                // Используем localStorage как временное хранилище
-                // В реальном проекте здесь был бы серверный API
-                this.localStorageKey = 'globalDownloadStats';
-                this.initialDownloads = {
-                    1: 0  // Начальное значение для Dog Clicker
-                };
-                this.init();
-            }
-
-            init() {
-                // Инициализируем данные, если их нет
-                if (!localStorage.getItem(this.localStorageKey)) {
-                    this.saveData(this.initialDownloads);
-                }
-            }
-
-            // Получить данные из хранилища
-            getData() {
-                try {
-                    const data = localStorage.getItem(this.localStorageKey);
-                    return data ? JSON.parse(data) : this.initialDownloads;
-                } catch (error) {
-                    console.error('Ошибка чтения данных:', error);
-                    return this.initialDownloads;
-                }
-            }
-
-            // Сохранить данные
-            saveData(data) {
-                try {
-                    localStorage.setItem(this.localStorageKey, JSON.stringify(data));
-                } catch (error) {
-                    console.error('Ошибка сохранения данных:', error);
-                }
-            }
-
-            // Получить количество скачиваний для приложения
-            getDownloads(appId) {
-                const data = this.getData();
-                return data[appId] || 0;
-            }
-
-            // Увеличить счетчик скачиваний
-            incrementDownloads(appId) {
-                const data = this.getData();
-                data[appId] = (data[appId] || 0) + 1;
-                this.saveData(data);
-                return data[appId];
-            }
-
-            // Получить общее количество скачиваний
-            getTotalDownloads() {
-                const data = this.getData();
-                return Object.values(data).reduce((sum, count) => sum + count, 0);
-            }
-
-            // Имитация синхронизации с сервером (для демонстрации)
-            simulateServerSync() {
-                // В реальном проекте здесь был бы fetch запрос к серверу
-                console.log('📡 Синхронизация счетчиков с сервером...');
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve(this.getData());
-                    }, 300);
-                });
-            }
-        }
-
-        const downloadCounter = new GlobalDownloadCounter();
-		
-		class ServerDownloadCounter {
-    async getDownloads(appId) {
-        const response = await fetch(`/api/downloads/${appId}`);
-        const data = await response.json();
-        return data.count;
-    }
-    
-    async incrementDownloads(appId) {
-        const response = await fetch(`/api/downloads/${appId}`, {
-            method: 'POST'
-        });
-        const data = await response.json();
-        return data.count;
-    }
-}
 
         // ============================
         // ОСНОВНАЯ ЛОГИКА
@@ -709,7 +611,7 @@
             // ============================
             // ФУНКЦИЯ: ОТОБРАЗИТЬ ПРИЛОЖЕНИЯ
             // ============================
-            async function renderApps() {
+            function renderApps() {
                 appsContainer.innerHTML = '';
                 const filteredApps = filterApps();
                 
@@ -730,7 +632,6 @@
                     const appCard = document.createElement('div');
                     appCard.className = 'app-card';
                     
-                    const downloads = downloadCounter.getDownloads(app.id);
                     const showNewBadge = isNew(app.added);
                     
                     const imageContent = app.image 
@@ -756,7 +657,7 @@
                                 <div class="meta-item">⏱️ ${app.developmentTime}</div>
                                 <div class="meta-item">📦 ${formatSize(app.fileSize, app.fileSizeUnit)}</div>
                                 <div class="meta-item">📅 ${app.added}</div>
-                                <div class="meta-item">💾 ${downloads} скач.</div>
+                                <div class="meta-item">🔄 ${app.updated}</div>
                             </div>
                             
                             <p class="app-description">${app.description}</p>
@@ -787,40 +688,13 @@
                             <div class="app-actions">
                                 <a href="${app.projectUrl}" 
                                    class="download-btn" 
-                                   target="_blank"
-                                   data-app-id="${app.id}">
-                                    📥 Скачать (${downloads})
+                                   target="_blank">
+                                    📥 Скачать
                                 </a>
                             </div>
                         </div>
                     `;
                     appsContainer.appendChild(appCard);
-                });
-
-                // Обработчики скачивания
-                document.querySelectorAll('.download-btn').forEach(btn => {
-                    btn.addEventListener('click', async function(e) {
-                        e.preventDefault();
-                        const appId = parseInt(this.dataset.appId);
-                        
-                        // Увеличиваем счетчик
-                        const newCount = downloadCounter.incrementDownloads(appId);
-                        
-                        // Имитируем синхронизацию с сервером
-                        await downloadCounter.simulateServerSync();
-                        
-                        // Обновляем интерфейс
-                        this.textContent = `📥 Скачать (${newCount})`;
-                        
-                        // Открываем ссылку для скачивания
-                        const app = csharpApps.find(a => a.id === appId);
-                        if (app && app.projectUrl) {
-                            window.open(app.projectUrl, '_blank');
-                        }
-                        
-                        // Обновляем статистику
-                        updateStats();
-                    });
                 });
             }
 
@@ -829,9 +703,6 @@
             // ============================
             function updateStats() {
                 document.getElementById('totalApps').textContent = csharpApps.length;
-                
-                const totalDownloads = downloadCounter.getTotalDownloads();
-                document.getElementById('totalDownloads').textContent = totalDownloads;
                 
                 const totalHours = csharpApps.reduce((sum, app) => {
                     const hours = parseInt(app.developmentTime);
@@ -852,16 +723,7 @@
             // ИНИЦИАЛИЗАЦИЯ
             // ============================
             function initialize() {
-                appsContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">⏳ Загрузка...</div>';
-                
-                // Показываем, что счетчики глобальные
-                const infoBanner = document.querySelector('.info-banner');
-                if (infoBanner) {
-                    infoBanner.innerHTML = `
-                        <span class="icon">🌐</span>
-                        <span>Глобальный счетчик скачиваний: все пользователи видят одинаковые числа!</span>
-                    `;
-                }
+                appsContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #6c757d;">⏳ Загрузка...</div>';
                 
                 renderFilters();
                 renderApps();
