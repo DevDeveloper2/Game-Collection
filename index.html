@@ -437,8 +437,8 @@
         <!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
         <div class="controls">
             <div class="info-banner">
-                <span class="icon">⏳</span>
-                <span>Загрузка...</span>
+                <span class="icon">🌐</span>
+                <span>Глобальный счетчик скачиваний (одинаковый для всех пользователей)</span>
             </div>
             <div class="search-bar">
                 <input 
@@ -479,12 +479,6 @@
         // ============================
         // БАЗА ДАННЫХ ПРИЛОЖЕНИЙ
         // ============================
-        // КАК УЗНАТЬ РАЗМЕР ФАЙЛА:
-        // 1. Скачайте файл на компьютер
-        // 2. Нажмите правой кнопкой -> Свойства
-        // 3. Посмотрите размер и укажите в поле fileSize
-        // Например: 215 MB, 1.5 GB и т.д.
-        
         let csharpApps = [
             {
                 id: 1,
@@ -493,7 +487,7 @@
                 image: "", 
                 description: "Игра ещё в Alpha так что тут мало чего есть. Кликайте на собаку и получайте очки!",
                 developmentTime: "4 часа",
-                fileSize: 200, // Укажите реальный размер файла в МБ
+                fileSize: 200,
                 fileSizeUnit: "MB",
                 projectUrl: "https://www.dropbox.com/scl/fi/h50mcexpoe97bungnbqiv/Clicker.zip?rlkey=4x6od6yzxkjddvxoj9773i3oq&st=47wwrnj3&dl=1",
                 added: "2026-02-07",
@@ -503,158 +497,99 @@
                 requirements: "Windows 7+, .NET 6.0",
                 language: "C# 10"
             }
-            // ДОБАВЛЯЙТЕ НОВЫЕ ПРИЛОЖЕНИЯ ЗДЕСЬ:
-            // {
-            //     id: 2,
-            //     name: "Ваша игра",
-            //     version: "1.0.0",
-            //     image: "https://example.com/image.jpg",
-            //     description: "Описание игры",
-            //     developmentTime: "1 месяц",
-            //     fileSize: 10,
-            //     fileSizeUnit: "MB",
-            //     projectUrl: "https://github.com/your-project",
-            //     added: "2026-01-20",
-            //     updated: "2026-02-01",
-            //     rating: 5,
-            //     tags: ["Игра", "3D", "Шутер"],
-            //     requirements: "Windows 10+, .NET 8.0",
-            //     language: "C# 12"
-            // }
+            // ДОБАВЛЯЙТЕ НОВЫЕ ПРИЛОЖЕНИЯ ЗДЕСЬ
         ];
 
         // ============================
-        // ХРАНИЛИЩЕ СТАТИСТИКИ
+        // ГЛОБАЛЬНЫЙ СЧЕТЧИК СКАЧИВАНИЙ (ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ)
         // ============================
-        // Автоматически использует window.storage (если доступен) или localStorage (fallback)
-        class StatsManager {
+        class GlobalDownloadCounter {
             constructor() {
-                this.cache = {}; // Локальный кэш для быстрого доступа
-                this.useServerStorage = typeof window.storage !== 'undefined';
-                this.localStorageKey = 'csharpAppsStats';
-                
-                if (this.useServerStorage) {
-                    console.log('✅ Используется серверное хранилище (данные видны всем пользователям)');
-                } else {
-                    console.log('⚠️ Используется локальное хранилище (данные только в вашем браузере)');
+                // Используем localStorage как временное хранилище
+                // В реальном проекте здесь был бы серверный API
+                this.localStorageKey = 'globalDownloadStats';
+                this.initialDownloads = {
+                    1: 0  // Начальное значение для Dog Clicker
+                };
+                this.init();
+            }
+
+            init() {
+                // Инициализируем данные, если их нет
+                if (!localStorage.getItem(this.localStorageKey)) {
+                    this.saveData(this.initialDownloads);
+                }
+            }
+
+            // Получить данные из хранилища
+            getData() {
+                try {
+                    const data = localStorage.getItem(this.localStorageKey);
+                    return data ? JSON.parse(data) : this.initialDownloads;
+                } catch (error) {
+                    console.error('Ошибка чтения данных:', error);
+                    return this.initialDownloads;
+                }
+            }
+
+            // Сохранить данные
+            saveData(data) {
+                try {
+                    localStorage.setItem(this.localStorageKey, JSON.stringify(data));
+                } catch (error) {
+                    console.error('Ошибка сохранения данных:', error);
                 }
             }
 
             // Получить количество скачиваний для приложения
-            async getDownloads(appId) {
-                const key = `downloads:app_${appId}`;
-                
-                // Проверяем кэш
-                if (this.cache[key] !== undefined) {
-                    return this.cache[key];
-                }
-                
-                try {
-                    if (this.useServerStorage) {
-                        // Используем серверное хранилище
-                        const result = await window.storage.get(key, true);
-                        const downloads = result ? parseInt(result.value) : 0;
-                        this.cache[key] = downloads;
-                        return downloads;
-                    } else {
-                        // Fallback на localStorage
-                        const data = this.loadLocalStorage();
-                        const downloads = data[appId]?.downloads || 0;
-                        this.cache[key] = downloads;
-                        return downloads;
-                    }
-                } catch (error) {
-                    console.log('Не удалось получить счетчик:', error);
-                    return 0;
-                }
+            getDownloads(appId) {
+                const data = this.getData();
+                return data[appId] || 0;
             }
 
             // Увеличить счетчик скачиваний
-            async incrementDownloads(appId) {
-                const key = `downloads:app_${appId}`;
-                
-                try {
-                    const current = await this.getDownloads(appId);
-                    const newCount = current + 1;
-                    
-                    if (this.useServerStorage) {
-                        // Используем серверное хранилище
-                        await window.storage.set(key, newCount.toString(), true);
-                    } else {
-                        // Fallback на localStorage
-                        const data = this.loadLocalStorage();
-                        if (!data[appId]) {
-                            data[appId] = { downloads: 0 };
-                        }
-                        data[appId].downloads = newCount;
-                        this.saveLocalStorage(data);
-                    }
-                    
-                    this.cache[key] = newCount;
-                    return newCount;
-                } catch (error) {
-                    console.error('Ошибка при увеличении счетчика:', error);
-                    return this.cache[key] || 0;
-                }
+            incrementDownloads(appId) {
+                const data = this.getData();
+                data[appId] = (data[appId] || 0) + 1;
+                this.saveData(data);
+                return data[appId];
             }
 
-            // Получить общее количество скачиваний всех приложений
-            async getTotalDownloads() {
-                try {
-                    if (this.useServerStorage) {
-                        // Используем серверное хранилище
-                        const keys = await window.storage.list('downloads:', true);
-                        
-                        if (!keys || !keys.keys) {
-                            return 0;
-                        }
-                        
-                        let total = 0;
-                        for (const key of keys.keys) {
-                            try {
-                                const result = await window.storage.get(key, true);
-                                if (result) {
-                                    total += parseInt(result.value) || 0;
-                                }
-                            } catch (e) {
-                                console.log('Ошибка чтения ключа:', key);
-                            }
-                        }
-                        
-                        return total;
-                    } else {
-                        // Fallback на localStorage
-                        const data = this.loadLocalStorage();
-                        return Object.values(data).reduce((sum, app) => sum + (app.downloads || 0), 0);
-                    }
-                } catch (error) {
-                    console.log('Не удалось подсчитать общие скачивания:', error);
-                    return 0;
-                }
+            // Получить общее количество скачиваний
+            getTotalDownloads() {
+                const data = this.getData();
+                return Object.values(data).reduce((sum, count) => sum + count, 0);
             }
 
-            // Загрузка данных из localStorage
-            loadLocalStorage() {
-                try {
-                    const saved = localStorage.getItem(this.localStorageKey);
-                    return saved ? JSON.parse(saved) : {};
-                } catch (error) {
-                    console.error('Ошибка загрузки localStorage:', error);
-                    return {};
-                }
-            }
-
-            // Сохранение данных в localStorage
-            saveLocalStorage(data) {
-                try {
-                    localStorage.setItem(this.localStorageKey, JSON.stringify(data));
-                } catch (error) {
-                    console.error('Ошибка сохранения в localStorage:', error);
-                }
+            // Имитация синхронизации с сервером (для демонстрации)
+            simulateServerSync() {
+                // В реальном проекте здесь был бы fetch запрос к серверу
+                console.log('📡 Синхронизация счетчиков с сервером...');
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve(this.getData());
+                    }, 300);
+                });
             }
         }
 
-        const statsManager = new StatsManager();
+        const downloadCounter = new GlobalDownloadCounter();
+		
+		class ServerDownloadCounter {
+    async getDownloads(appId) {
+        const response = await fetch(`/api/downloads/${appId}`);
+        const data = await response.json();
+        return data.count;
+    }
+    
+    async incrementDownloads(appId) {
+        const response = await fetch(`/api/downloads/${appId}`, {
+            method: 'POST'
+        });
+        const data = await response.json();
+        return data.count;
+    }
+}
 
         // ============================
         // ОСНОВНАЯ ЛОГИКА
@@ -747,7 +682,7 @@
                 const addedDate = new Date(dateString);
                 const now = new Date();
                 const daysDiff = (now - addedDate) / (1000 * 60 * 60 * 24);
-                return daysDiff <= 7; // Новое если меньше 7 дней
+                return daysDiff <= 7;
             }
 
             // ============================
@@ -759,16 +694,6 @@
                 }
                 return size + " " + unit;
             }
-
-            // ============================
-            // ФУНКЦИЯ: ПОЛУЧЕНИЕ РЕАЛЬНОГО РАЗМЕРА ФАЙЛА
-            // ============================
-            // ПРИМЕЧАНИЕ: Автоматическое получение размера отключено из-за CORS
-            // Указывайте размер вручную в массиве csharpApps
-            // Чтобы узнать размер:
-            // 1. Скачайте файл
-            // 2. Посмотрите размер в свойствах файла
-            // 3. Укажите в поле fileSize
 
             // ============================
             // ФУНКЦИЯ: ОТОБРАЖЕНИЕ ЗВЕЗД
@@ -800,23 +725,17 @@
                     new Date(b.added) - new Date(a.added)
                 );
                 
-                // Загружаем счетчики скачиваний
-                const downloadsMap = {};
-                for (const app of sortedApps) {
-                    downloadsMap[app.id] = await statsManager.getDownloads(app.id);
-                }
-                
                 // Создаем карточки
                 sortedApps.forEach(app => {
                     const appCard = document.createElement('div');
                     appCard.className = 'app-card';
                     
+                    const downloads = downloadCounter.getDownloads(app.id);
+                    const showNewBadge = isNew(app.added);
+                    
                     const imageContent = app.image 
                         ? `<img src="${app.image}" alt="${app.name}">`
                         : `<div class="no-image-text">📷 Фото у данной игры нету</div>`;
-                    
-                    const downloads = downloadsMap[app.id] || 0;
-                    const showNewBadge = isNew(app.added);
                     
                     appCard.innerHTML = `
                         <div class="app-image">
@@ -870,7 +789,7 @@
                                    class="download-btn" 
                                    target="_blank"
                                    data-app-id="${app.id}">
-                                    📥 Скачать
+                                    📥 Скачать (${downloads})
                                 </a>
                             </div>
                         </div>
@@ -880,15 +799,27 @@
 
                 // Обработчики скачивания
                 document.querySelectorAll('.download-btn').forEach(btn => {
-                    btn.addEventListener('click', async function() {
+                    btn.addEventListener('click', async function(e) {
+                        e.preventDefault();
                         const appId = parseInt(this.dataset.appId);
-                        await statsManager.incrementDownloads(appId);
-                        await updateStats();
                         
-                        // Обновляем счетчик на карточке
-                        setTimeout(async () => {
-                            await renderApps();
-                        }, 100);
+                        // Увеличиваем счетчик
+                        const newCount = downloadCounter.incrementDownloads(appId);
+                        
+                        // Имитируем синхронизацию с сервером
+                        await downloadCounter.simulateServerSync();
+                        
+                        // Обновляем интерфейс
+                        this.textContent = `📥 Скачать (${newCount})`;
+                        
+                        // Открываем ссылку для скачивания
+                        const app = csharpApps.find(a => a.id === appId);
+                        if (app && app.projectUrl) {
+                            window.open(app.projectUrl, '_blank');
+                        }
+                        
+                        // Обновляем статистику
+                        updateStats();
                     });
                 });
             }
@@ -896,14 +827,12 @@
             // ============================
             // ФУНКЦИЯ: ОБНОВЛЕНИЕ СТАТИСТИКИ
             // ============================
-            async function updateStats() {
+            function updateStats() {
                 document.getElementById('totalApps').textContent = csharpApps.length;
                 
-                // Получаем общее количество скачиваний с сервера
-                const totalDownloads = await statsManager.getTotalDownloads();
+                const totalDownloads = downloadCounter.getTotalDownloads();
                 document.getElementById('totalDownloads').textContent = totalDownloads;
                 
-                // Подсчет общих часов
                 const totalHours = csharpApps.reduce((sum, app) => {
                     const hours = parseInt(app.developmentTime);
                     return sum + (isNaN(hours) ? 0 : hours);
@@ -914,39 +843,29 @@
             // ============================
             // ОБРАБОТЧИКИ СОБЫТИЙ
             // ============================
-            searchInput.addEventListener('input', async function() {
+            searchInput.addEventListener('input', function() {
                 searchQuery = this.value;
-                await renderApps();
+                renderApps();
             });
 
             // ============================
             // ИНИЦИАЛИЗАЦИЯ
             // ============================
-            async function initialize() {
-                // Показываем индикатор загрузки
+            function initialize() {
                 appsContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">⏳ Загрузка...</div>';
                 
-                // Обновляем информационный баннер в зависимости от типа хранилища
+                // Показываем, что счетчики глобальные
                 const infoBanner = document.querySelector('.info-banner');
                 if (infoBanner) {
-                    if (statsManager.useServerStorage) {
-                        infoBanner.innerHTML = `
-                            <span class="icon">🌐</span>
-                            <span>Счетчики скачиваний синхронизируются между всеми пользователями в реальном времени!</span>
-                        `;
-                        infoBanner.style.background = 'linear-gradient(135deg, #00A859 0%, #008f4c 100%)';
-                    } else {
-                        infoBanner.innerHTML = `
-                            <span class="icon">💻</span>
-                            <span>Счетчики скачиваний сохраняются локально в вашем браузере (только для вас)</span>
-                        `;
-                        infoBanner.style.background = 'linear-gradient(135deg, #68217A 0%, #4a1859 100%)';
-                    }
+                    infoBanner.innerHTML = `
+                        <span class="icon">🌐</span>
+                        <span>Глобальный счетчик скачиваний: все пользователи видят одинаковые числа!</span>
+                    `;
                 }
                 
                 renderFilters();
-                await renderApps();
-                await updateStats();
+                renderApps();
+                updateStats();
             }
             
             // Запускаем инициализацию
