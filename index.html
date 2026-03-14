@@ -3,737 +3,715 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мои C# Приложения</title>
+    <title>Dog Clicker Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* === ОСНОВНЫЕ СТИЛИ === */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --card: #1a1a24;
+            --border: #2a2a3a;
+            --accent: #f5a623;
+            --accent2: #e8572a;
+            --text: #e8e8f0;
+            --muted: #6b6b85;
+            --green: #3ddc84;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #2c3e50;
-            line-height: 1.6;
-            padding: 20px;
+            font-family: 'Space Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* === BACKGROUND GRID === */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(245,166,35,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(245,166,35,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        /* === ШАПКА === */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        /* === SCANLINES === */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.08) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .header h1 {
-            color: #ffffff;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .header p {
-            color: #f0f0f0;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        .stats-bar {
+        /* === NAV === */
+        nav {
+            position: relative;
+            z-index: 10;
             display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px 25px;
-            border-radius: 10px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
             backdrop-filter: blur(10px);
         }
 
-        .stat-number {
-            color: #ffffff;
-            font-size: 1.8rem;
-            font-weight: bold;
+        .nav-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            color: var(--accent);
+            letter-spacing: 3px;
         }
 
-        .stat-label {
-            color: #f0f0f0;
-            font-size: 0.9rem;
-        }
-
-        /* === ПАНЕЛЬ ПОИСКА И ФИЛЬТРОВ === */
-        .controls {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .info-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .nav-badge {
+            background: var(--accent2);
             color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
         }
 
-        .info-banner .icon {
-            font-size: 1.2rem;
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .search-input {
-            flex: 1;
-            min-width: 250px;
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            color: #2c3e50;
-            padding: 12px 15px;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .filter-tags {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .tag-filter {
-            background: #f8f9fa;
-            color: #495057;
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 2px solid #e0e0e0;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .tag-filter:hover {
-            border-color: #667eea;
-            color: #667eea;
-            background: #f0f4ff;
-        }
-
-        .tag-filter.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
-        }
-
-        /* === КАРТОЧКИ ПРИЛОЖЕНИЙ === */
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .app-card {
-            background: #ffffff;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+        /* === HERO === */
+        .hero {
             position: relative;
-        }
-
-        .app-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
-        }
-
-        .app-image {
-            height: 240px;
-            overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-        }
-
-        .app-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .app-image .no-image-text {
-            color: #ffffff;
-            font-size: 0.95rem;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .app-badges {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 5px;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .app-badge {
-            background: rgba(255, 255, 255, 0.9);
-            color: #764ba2;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .version-badge {
-            background: rgba(255, 255, 255, 0.9);
-            color: #667eea;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .new-badge {
-            background: #ff6b6b;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .app-content {
-            padding: 20px;
-        }
-
-        .app-title {
-            color: #2c3e50;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .app-rating {
-            display: flex;
-            gap: 2px;
-            margin-bottom: 10px;
-        }
-
-        .star {
-            color: #ffd700;
-            font-size: 1rem;
-        }
-
-        .star.empty {
-            color: #ddd;
-        }
-
-        .app-meta {
+            z-index: 1;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-            color: #6c757d;
-            font-size: 0.85rem;
+            gap: 60px;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 40px 60px;
         }
 
-        .meta-item {
+        .hero-left {
+            position: relative;
+        }
+
+        .game-subtitle {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 10px;
         }
 
-        .app-description {
-            margin-bottom: 15px;
-            line-height: 1.5;
-            color: #495057;
+        .game-subtitle::before {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 2px;
+            background: var(--accent);
         }
 
-        .app-tags {
+        .game-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            line-height: 0.9;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .game-title span {
+            color: var(--accent);
+            display: block;
+        }
+
+        .version-row {
             display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0 20px;
             flex-wrap: wrap;
         }
 
-        .app-tag {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
+        .version-chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            padding: 5px 14px;
+            font-size: 0.72rem;
+            letter-spacing: 2px;
         }
 
-        .app-details {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-size: 0.85rem;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            color: #6c757d;
-        }
-
-        .detail-value {
-            color: #2c3e50;
-            font-weight: bold;
-        }
-
-        .app-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .download-btn {
-            flex: 1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            font-family: 'Courier New', monospace;
-            text-align: center;
+        .status-chip {
+            background: rgba(61, 220, 132, 0.1);
+            border: 1px solid rgba(61, 220, 132, 0.3);
+            color: var(--green);
+            padding: 5px 14px;
+            font-size: 0.72rem;
+            letter-spacing: 2px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            gap: 6px;
         }
 
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        .status-chip::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: blink 2s infinite;
         }
 
-        /* === ФУТЕР === */
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 20px;
-            color: #6c757d;
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
 
-        /* === СООБЩЕНИЯ === */
-        .no-results {
-            text-align: center;
-            padding: 50px;
-            color: #6c757d;
+        .hero-description {
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.8;
+            margin-bottom: 36px;
+            max-width: 480px;
         }
 
-        .no-results h3 {
-            color: #495057;
-            margin-bottom: 10px;
+        /* === DOWNLOAD BUTTONS === */
+        .download-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        /* === АДАПТИВНОСТЬ === */
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 28px;
+            background: var(--accent);
+            color: #0a0a0f;
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #ffbe45;
+            transform: translateX(4px);
+        }
+
+        .btn-primary .btn-icon {
+            font-size: 1.4rem;
+        }
+
+        .btn-primary .btn-size {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 0;
+        }
+
+        .btn-update {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            background: transparent;
+            color: var(--text);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            border: 1px solid var(--border);
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+            transition: all 0.3s;
+        }
+
+        .btn-update::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(232,87,42,0.08), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn-update:hover {
+            border-color: var(--accent2);
+            color: var(--accent2);
+            transform: translateX(4px);
+        }
+
+        .btn-update:hover::before { opacity: 1; }
+
+        .btn-update .update-badge {
+            background: var(--accent2);
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 8px;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 1px;
+            animation: pulse-badge 2.5s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* === HERO RIGHT: GAME SCREENSHOT === */
+        .hero-right {
+            position: relative;
+        }
+
+        .screenshot-frame {
+            position: relative;
+            border: 1px solid var(--border);
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+            overflow: hidden;
+            background: var(--surface);
+        }
+
+        .screenshot-frame img {
+            width: 100%;
+            display: block;
+            filter: saturate(1.1) contrast(1.05);
+        }
+
+        .frame-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--accent);
+            border-style: solid;
+        }
+        .frame-corner.tl { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+        .frame-corner.tr { top: 8px; right: 8px; border-width: 2px 2px 0 0; }
+        .frame-corner.bl { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; }
+        .frame-corner.br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+        .screenshot-label {
+            position: absolute;
+            bottom: 14px;
+            left: 14px;
+            background: rgba(10,10,15,0.85);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            padding: 4px 10px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* === STATS STRIP === */
+        .stats-strip {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            padding: 0;
+            display: flex;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .stat-block {
+            flex: 1;
+            padding: 28px 32px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-block:last-child { border-right: none; }
+
+        .stat-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.4rem;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: 0.68rem;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        /* === DETAILS SECTION === */
+        .details-section {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 70px 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .section-label {
+            font-size: 0.72rem;
+            letter-spacing: 4px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* === SPEC TABLE === */
+        .spec-table {
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .spec-row {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .spec-row:last-child { border-bottom: none; }
+        .spec-row:hover { background: rgba(245,166,35,0.04); }
+
+        .spec-key {
+            width: 140px;
+            flex-shrink: 0;
+            padding: 14px 18px;
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            color: var(--muted);
+            border-right: 1px solid var(--border);
+            text-transform: uppercase;
+        }
+
+        .spec-val {
+            padding: 14px 18px;
+            font-size: 0.82rem;
+            color: var(--text);
+        }
+
+        /* === TAGS === */
+        .tags-block {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .game-tag {
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 6px 16px;
+            font-size: 0.72rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+        }
+
+        .game-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* === CHANGELOG === */
+        .changelog {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .changelog-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .changelog-title {
+            font-size: 0.72rem;
+            letter-spacing: 3px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .changelog-version {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .changelog-item {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            font-size: 0.8rem;
+            color: var(--muted);
+            transition: background 0.2s;
+        }
+
+        .changelog-item:last-child { border-bottom: none; }
+        .changelog-item:hover { background: rgba(245,166,35,0.03); }
+
+        .changelog-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        /* === FOOTER === */
+        footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 100%;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+        }
+
+        .footer-copy {
+            font-size: 0.72rem;
+            color: var(--muted);
+            letter-spacing: 1px;
+        }
+
+        /* === FLOATING PAW DECORATIONS === */
+        .paw-deco {
+            position: fixed;
+            font-size: 120px;
+            opacity: 0.025;
+            pointer-events: none;
+            z-index: 0;
+            user-select: none;
+        }
+
+        .paw-deco.p1 { top: 10%; right: -2%; transform: rotate(20deg); }
+        .paw-deco.p2 { bottom: 20%; left: -2%; transform: rotate(-30deg); }
+
+        /* === RESPONSIVE === */
         @media (max-width: 768px) {
-            .apps-grid {
+            .hero {
                 grid-template-columns: 1fr;
+                padding: 40px 20px 30px;
+                gap: 40px;
             }
-
-            .stats-bar {
-                gap: 15px;
-            }
-
-            .search-bar {
-                flex-direction: column;
-            }
-
-            .app-meta {
+            .hero-right { display: none; }
+            .details-section {
                 grid-template-columns: 1fr;
+                padding: 40px 20px;
             }
+            nav { padding: 16px 20px; }
+            .stats-strip { flex-wrap: wrap; }
+            .stat-block { border-right: none; border-bottom: 1px solid var(--border); }
+            footer { padding: 20px; flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- ШАПКА -->
-        <header class="header">
-            <h1>🎮 Мои C# Проекты</h1>
-            <p>Коллекция игр и приложений на C#</p>
-            
-            <div class="stats-bar">
-                <div class="stat-item">
-                    <div class="stat-number" id="totalApps">0</div>
-                    <div class="stat-label">Проектов</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="totalHours">0</div>
-                    <div class="stat-label">Часов разработки</div>
-                </div>
-            </div>
-        </header>
 
-        <!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
-        <div class="controls">
-            <div class="info-banner">
-                <span class="icon">✨</span>
-                <span>Все проекты доступны для скачивания бесплатно</span>
+    <!-- PAW DECORATIONS -->
+    <div class="paw-deco p1">🐾</div>
+    <div class="paw-deco p2">🐾</div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo">DEV DEVELOPER</div>
+        <div class="nav-badge">C# PROJECTS</div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-left">
+            <div class="game-subtitle">Игра / Казуальная</div>
+            <h1 class="game-title">
+                DOG
+                <span>CLICKER</span>
+                SIMULATOR
+            </h1>
+
+            <div class="version-row">
+                <div class="version-chip">BETA 1.8</div>
+                <div class="status-chip">ДОСТУПНО</div>
+                <div class="version-chip">C#</div>
             </div>
-            <div class="search-bar">
-                <input 
-                    type="text" 
-                    class="search-input" 
-                    id="searchInput" 
-                    placeholder="🔍 Поиск по названию или описанию..."
-                >
-            </div>
-            <div class="filter-tags" id="filterTags">
-                <!-- Теги будут загружены динамически -->
+
+            <p class="hero-description">
+                Кликайте на собаку и получайте очки!
+                Простая и увлекательная игра-кликер на C#.
+                Бесконечное веселье в одном клике.
+            </p>
+
+            <div class="download-group">
+                <a href="https://www.dropbox.com/scl/fi/mtkmw7mzuie4esne75wbn/DogClickerSim.zip?rlkey=ikby44gn0s4bse1sne7atqu97&st=9u787avy&dl=1"
+                   class="btn-primary">
+                    <span>📥 СКАЧАТЬ ИГРУ</span>
+                    <span class="btn-size">57 MB</span>
+                </a>
+                <a href="https://www.dropbox.com/scl/fi/fmaeb68yq3hi6hfnintao/DogClickerUpdater.zip?rlkey=hlqaxtzqk2e51cruth5ij7jou&st=1esmxy08&dl=1"
+                   class="btn-update">
+                    <span>🔄 СКАЧАТЬ ОБНОВЩИК ИГРЫ</span>
+                    <span class="update-badge">UPDATER FOR GAME</span>
+                </a>
             </div>
         </div>
 
-        <!-- КОНТЕЙНЕР ДЛЯ ПРИЛОЖЕНИЙ -->
-        <main>
-            <div class="apps-grid" id="appsContainer">
-                <!-- ПРИЛОЖЕНИЯ БУДУТ ЗАГРУЖЕНЫ ЗДЕСЬ -->
+        <div class="hero-right">
+            <div class="screenshot-frame">
+                <img src="https://raw.githubusercontent.com/DevDeveloper2/Game-Collection/refs/heads/main/Preview.png"
+                     alt="Dog Clicker Simulator Screenshot">
+                <div class="frame-corner tl"></div>
+                <div class="frame-corner tr"></div>
+                <div class="frame-corner bl"></div>
+                <div class="frame-corner br"></div>
+                <div class="screenshot-label">PREVIEW / IN-GAME</div>
             </div>
-            
-            <!-- Сообщение если нет результатов -->
-            <div id="noResults" class="no-results" style="display: none;">
-                <h3>😕 Ничего не найдено</h3>
-                <p>Попробуйте изменить параметры поиска</p>
-            </div>
-        </main>
+        </div>
+    </section>
 
-        <!-- ФУТЕР -->
-        <footer class="footer">
-            <p>© 2026 | C# Portfolio | Мои проекты на C#</p>
-            <p style="font-size: 0.9rem; margin-top: 10px;">
-                Все приложения созданы мной. Наслаждайтесь просмотром!
-            </p>
-        </footer>
+    <!-- STATS STRIP -->
+    <div class="stats-strip">
+        <div class="stat-block">
+            <div class="stat-num">4</div>
+            <div class="stat-lbl">Часа разработки</div>
+        </div>
+        <div class="stat-block">
+            <div class="stat-num">57</div>
+            <div class="stat-lbl">MB размер</div>
+        </div>
+        <div class="stat-block">
+            <div class="stat-num">4/5</div>
+            <div class="stat-lbl">Рейтинг</div>
+        </div>
+        <div class="stat-block">
+            <div class="stat-num">14.03</div>
+            <div class="stat-lbl">Дата обновления</div>
+        </div>
     </div>
 
-    <script>
-        // ============================
-        // БАЗА ДАННЫХ ПРИЛОЖЕНИЙ
-        // ============================
-        let csharpApps = [
-            {
-                id: 1,
-                name: "Dog Clicker Simulator",
-                version: "BETA 1.8",
-                image: "https://raw.githubusercontent.com/DevDeveloper2/Game-Collection/refs/heads/main/Preview.png", 
-                description: "Кликайте на собаку и получайте очки! Простая и увлекательная игра-кликер.",
-                developmentTime: "4 часа",
-                fileSize: 57,
-                fileSizeUnit: "MB",
-                projectUrl: "https://www.dropbox.com/scl/fi/mtkmw7mzuie4esne75wbn/DogClickerSim.zip?rlkey=ikby44gn0s4bse1sne7atqu97&st=9u787avy&dl=1",
-                added: "2026-02-07",
-                updated: "2026-03-14",
-                rating: 4,
-                tags: ["Игра", "Кликер", "Казуальная"],
-                requirements: "Windows 10+, .NET 10.0",
-                language: "C#"
-            }
-            // ДОБАВЛЯЙТЕ НОВЫЕ ПРИЛОЖЕНИЯ ЗДЕСЬ
-        ];
+    <!-- DETAILS SECTION -->
+    <section class="details-section">
 
-        // ============================
-        // ОСНОВНАЯ ЛОГИКА
-        // ============================
-        document.addEventListener('DOMContentLoaded', function() {
-            const appsContainer = document.getElementById('appsContainer');
-            const noResults = document.getElementById('noResults');
-            const searchInput = document.getElementById('searchInput');
-            const filterTagsContainer = document.getElementById('filterTags');
-            
-            let activeFilters = new Set();
-            let searchQuery = '';
+        <!-- LEFT: SPECS -->
+        <div>
+            <div class="section-label">Характеристики</div>
+            <div class="spec-table">
+                <div class="spec-row">
+                    <div class="spec-key">Версия</div>
+                    <div class="spec-val">BETA 1.8</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key">Язык</div>
+                    <div class="spec-val">C#</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key">Платформа</div>
+                    <div class="spec-val">Windows 10+</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key">Runtime</div>
+                    <div class="spec-val">.NET 10.0</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key">Добавлено</div>
+                    <div class="spec-val">2026-02-07</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key">Обновлено</div>
+                    <div class="spec-val">2026-03-14</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key">Размер</div>
+                    <div class="spec-val">57 MB</div>
+                </div>
+            </div>
 
-            // ============================
-            // ФУНКЦИЯ: ПОЛУЧЕНИЕ ВСЕХ ТЕГОВ
-            // ============================
-            function getAllTags() {
-                const tagsSet = new Set();
-                csharpApps.forEach(app => {
-                    app.tags.forEach(tag => tagsSet.add(tag));
-                });
-                return Array.from(tagsSet);
-            }
+            <div class="section-label" style="margin-top: 36px;">Теги</div>
+            <div class="tags-block">
+                <div class="game-tag">Игра</div>
+                <div class="game-tag">Кликер</div>
+                <div class="game-tag">Казуальная</div>
+                <div class="game-tag">C#</div>
+                <div class="game-tag">Windows</div>
+            </div>
+        </div>
 
-            // ============================
-            // ФУНКЦИЯ: ОТОБРАЖЕНИЕ ФИЛЬТРОВ
-            // ============================
-            function renderFilters() {
-                const tags = getAllTags();
-                filterTagsContainer.innerHTML = `
-                    <div class="tag-filter ${activeFilters.size === 0 ? 'active' : ''}" data-tag="all">
-                        Все
-                    </div>
-                `;
-                
-                tags.forEach(tag => {
-                    const filterBtn = document.createElement('div');
-                    filterBtn.className = 'tag-filter';
-                    filterBtn.dataset.tag = tag;
-                    filterBtn.textContent = tag;
-                    if (activeFilters.has(tag)) {
-                        filterBtn.classList.add('active');
-                    }
-                    filterTagsContainer.appendChild(filterBtn);
-                });
+        <!-- RIGHT: CHANGELOG -->
+<div>
+    <div class="section-label">История версий</div>
+    <div class="changelog">
+        <div class="changelog-header">
+            <span class="changelog-title">Changelog</span>
+            <span class="changelog-version">BETA 1.8</span>
+        </div>
+        <div class="changelog-item">
+            <div class="changelog-dot"></div>
+            <span>Оптимизирована производительность под .NET 10.0</span>
+        </div>
+        <div class="changelog-item">
+            <div class="changelog-dot"></div>
+            <span>Исправлены мелкие баги</span>
+        </div>
+        <div class="changelog-item">
+            <div class="changelog-dot"></div>
+            <span>Добавлен лидерборд</span>
+        </div>
+    </div>
+</div>
+    </section>
 
-                // Обработчики кликов
-                document.querySelectorAll('.tag-filter').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const tag = this.dataset.tag;
-                        
-                        if (tag === 'all') {
-                            activeFilters.clear();
-                        } else {
-                            if (activeFilters.has(tag)) {
-                                activeFilters.delete(tag);
-                            } else {
-                                activeFilters.add(tag);
-                            }
-                        }
-                        
-                        renderFilters();
-                        renderApps();
-                    });
-                });
-            }
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-logo">DOG CLICKER SIM</div>
+        <div class="footer-copy">© 2026 DEV DEVELOPER · C# PROJECT · БЕСПЛАТНО</div>
+    </footer>
 
-            // ============================
-            // ФУНКЦИЯ: ФИЛЬТРАЦИЯ ПРИЛОЖЕНИЙ
-            // ============================
-            function filterApps() {
-                return csharpApps.filter(app => {
-                    // Фильтр по поиску
-                    const matchesSearch = searchQuery === '' || 
-                        app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        app.description.toLowerCase().includes(searchQuery.toLowerCase());
-                    
-                    // Фильтр по тегам
-                    const matchesTags = activeFilters.size === 0 || 
-                        app.tags.some(tag => activeFilters.has(tag));
-                    
-                    return matchesSearch && matchesTags;
-                });
-            }
-
-            // ============================
-            // ФУНКЦИЯ: ПРОВЕРКА НА НОВИЗНУ
-            // ============================
-            function isNew(dateString) {
-                const addedDate = new Date(dateString);
-                const now = new Date();
-                const daysDiff = (now - addedDate) / (1000 * 60 * 60 * 24);
-                return daysDiff <= 7;
-            }
-
-            // ============================
-            // ФУНКЦИЯ: ФОРМАТИРОВАНИЕ РАЗМЕРА
-            // ============================
-            function formatSize(size, unit) {
-                if (size >= 1024 && unit === "MB") {
-                    return (size / 1024).toFixed(2) + " GB";
-                }
-                return size + " " + unit;
-            }
-
-            // ============================
-            // ФУНКЦИЯ: ОТОБРАЖЕНИЕ ЗВЕЗД
-            // ============================
-            function renderStars(rating) {
-                let stars = '';
-                for (let i = 1; i <= 5; i++) {
-                    stars += `<span class="star ${i <= rating ? '' : 'empty'}">★</span>`;
-                }
-                return stars;
-            }
-
-            // ============================
-            // ФУНКЦИЯ: ОТОБРАЗИТЬ ПРИЛОЖЕНИЯ
-            // ============================
-            function renderApps() {
-                appsContainer.innerHTML = '';
-                const filteredApps = filterApps();
-                
-                if (filteredApps.length === 0) {
-                    noResults.style.display = 'block';
-                    return;
-                }
-                
-                noResults.style.display = 'none';
-                
-                // Сортируем по дате (новые сверху)
-                const sortedApps = [...filteredApps].sort((a, b) => 
-                    new Date(b.added) - new Date(a.added)
-                );
-                
-                // Создаем карточки
-                sortedApps.forEach(app => {
-                    const appCard = document.createElement('div');
-                    appCard.className = 'app-card';
-                    
-                    const showNewBadge = isNew(app.added);
-                    
-                    const imageContent = app.image 
-                        ? `<img src="${app.image}" alt="${app.name}">`
-                        : `<div class="no-image-text">📷 Фото у данной игры нету</div>`;
-                    
-                    appCard.innerHTML = `
-                        <div class="app-image">
-                            ${imageContent}
-                            <div class="app-badges">
-                                ${showNewBadge ? '<div class="new-badge">НОВОЕ</div>' : ''}
-                                <div class="version-badge">v${app.version}</div>
-                                <div class="app-badge">C#</div>
-                            </div>
-                        </div>
-                        <div class="app-content">
-                            <h3 class="app-title">
-                                ${app.name}
-                            </h3>
-                            <div class="app-rating">${renderStars(app.rating)}</div>
-                            
-                            <div class="app-meta">
-                                <div class="meta-item">⏱️ ${app.developmentTime}</div>
-                                <div class="meta-item">📦 ${formatSize(app.fileSize, app.fileSizeUnit)}</div>
-                                <div class="meta-item">📅 ${app.added}</div>
-                                <div class="meta-item">🔄 ${app.updated}</div>
-                            </div>
-                            
-                            <p class="app-description">${app.description}</p>
-                            
-                            <div class="app-tags">
-                                ${app.tags.map(tag => `<span class="app-tag">${tag}</span>`).join('')}
-                            </div>
-                            
-                            <div class="app-details">
-                                <div class="detail-row">
-                                    <span class="detail-label">Версия:</span>
-                                    <span class="detail-value">${app.version}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Язык:</span>
-                                    <span class="detail-value">${app.language}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Требования:</span>
-                                    <span class="detail-value">${app.requirements}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Обновлено:</span>
-                                    <span class="detail-value">${app.updated}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="app-actions">
-                                <a href="${app.projectUrl}" 
-                                   class="download-btn" 
-                                   target="_blank">
-                                    📥 Скачать
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                    appsContainer.appendChild(appCard);
-                });
-            }
-
-            // ============================
-            // ФУНКЦИЯ: ОБНОВЛЕНИЕ СТАТИСТИКИ
-            // ============================
-            function updateStats() {
-                document.getElementById('totalApps').textContent = csharpApps.length;
-                
-                const totalHours = csharpApps.reduce((sum, app) => {
-                    const hours = parseInt(app.developmentTime);
-                    return sum + (isNaN(hours) ? 0 : hours);
-                }, 0);
-                document.getElementById('totalHours').textContent = totalHours;
-            }
-
-            // ============================
-            // ОБРАБОТЧИКИ СОБЫТИЙ
-            // ============================
-            searchInput.addEventListener('input', function() {
-                searchQuery = this.value;
-                renderApps();
-            });
-
-            // ============================
-            // ИНИЦИАЛИЗАЦИЯ
-            // ============================
-            function initialize() {
-                appsContainer.innerHTML = '<div style="text-align: center; padding: 50px; color: #6c757d;">⏳ Загрузка...</div>';
-                
-                renderFilters();
-                renderApps();
-                updateStats();
-            }
-            
-            // Запускаем инициализацию
-            initialize();
-        });
-    </script>
 </body>
 </html>
